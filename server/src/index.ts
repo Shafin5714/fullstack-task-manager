@@ -10,5 +10,5 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 connectDB();
 
 app.listen(PORT, () => {
-  console.log(`API listening on PORT:${PORT}`);
+  console.log(`API listening on PORT:${PORT}`.yellow.bold);
 });
