@@ -10,7 +10,7 @@
     "check": "tsc --noEmit"
   },
   "keywords": [],
-  "author": "",
+  "author": "Shafin5714",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.2",

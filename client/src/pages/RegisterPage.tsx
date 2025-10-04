@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 import {
   Form,
@@ -25,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState } from "react";
+import axios from "@/lib/axios";
 
 const formSchema = z
   .object({
@@ -46,12 +48,23 @@ const formSchema = z
     path: ["confirmPassword"],
   });
 
+type RegisterResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
 const RegisterPage = () => {
   // hooks
   const navigate = useNavigate();
+  const { setAuthData } = useAuth();
 
   // states
-  const [loading, isLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,13 +78,19 @@ const RegisterPage = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { name, email, password } = values;
+    setIsLoading(true);
+    const res = await axios.post<RegisterResponse>("/user/register", {
+      name,
+      email,
+      password,
+    });
 
-    // if (res.success) {
-    //   const { id, name, email } = res.data;
-
-    //   toast.success(res.message);
-    //   navigate("/");
-    // }
+    if (res.data.success) {
+      setAuthData(res.data.data);
+      toast.success(res.data.message);
+      navigate("/");
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -156,7 +175,7 @@ const RegisterPage = () => {
                 </div>
 
                 <Button
-                  className="mt-7 h-10 w-full sm:h-11"
+                  className="mt-7 h-10 w-full sm:h-11 cursor-pointer"
                   type="submit"
                   disabled={isLoading}
                 >
