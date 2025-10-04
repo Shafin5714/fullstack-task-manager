@@ -1,0 +1,67 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tsbuildinfo
+
+# Build outputs (any package)
+dist/
+build/
+.cache/
+.eslintcache
+
+# Client (Vite/CRA/Next) artifacts
+client/dist/
+client/build/
+client/.vite/
+client/.parcel-cache/
+client/.next/
+client/out/
+
+# Server (compiled JS)
+server/dist/
+
+# Env & secrets (keep only examples)
+.env
+.env.*
+!/client/.env.example
+!/server/.env.example
+!.env.example
+
+# Tests / coverage
+coverage/
+cypress/videos/
+cypress/screenshots/
+.cypress-cache/
+
+# Logs & pids
+logs/
+*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# IDE / editor
+.vscode/
+.idea/
+.history/
+
+# Vercel / Netlify / Now
+.vercel/
+.netlify/
+.now/
+
+# Docker (keep main compose; ignore local overrides)
+.env.docker
+docker-compose.override.yml
+
+# Misc
+*.orig
+*.rej
