@@ -3,13 +3,14 @@ import { DashboardStats } from "@/components/dashboard/dashboard-stats";
 import { TaskList } from "@/components/task/task-list";
 import { TaskStatusFilter } from "@/components/task/task-status-filter";
 import { useTaskFilters } from "@/hooks/use-task-filters";
-import { Task } from "@/types";
+import { Task, TaskFormData } from "@/types";
 import { useState } from "react";
 import {
   AdvancedFilters,
   type FilterOptions,
 } from "@/components/task/advance-filers";
 import { useTasks } from "@/hooks/use-tasks";
+import { TaskForm } from "@/components/task/task-form";
 
 const DashboardPage = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -49,9 +50,27 @@ const DashboardPage = () => {
     setIsTaskFormOpen(true);
   };
 
+  const handleCreateTask = () => {
+    setEditingTask(null);
+    setIsTaskFormOpen(true);
+  };
+
+  const handleTaskSubmit = async (formData: TaskFormData) => {
+    if (editingTask) {
+      await updateTask(editingTask.id, formData);
+    } else {
+      await createTask(formData);
+    }
+  };
+
   return (
     <div>
-      <DashboardHeader />
+      <DashboardHeader
+        onCreateTask={handleCreateTask}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onToggleSidebar={() => setIsSidebarOpen(true)}
+      />
       <div className="max-w-7xl mx-auto px-4">
         <DashboardStats
           taskCounts={{
@@ -77,6 +96,13 @@ const DashboardPage = () => {
           onEdit={handleEditTask}
           onDelete={deleteTask}
           onStatusChange={updateTaskStatus}
+        />
+
+        <TaskForm
+          open={isTaskFormOpen}
+          onOpenChange={setIsTaskFormOpen}
+          task={editingTask}
+          onSubmit={handleTaskSubmit}
         />
       </div>
     </div>
