@@ -44,6 +44,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (storedUser) {
         setUser(JSON.parse(storedUser));
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
       }
       setIsLoading(false);
     };
@@ -59,10 +62,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Logout function
   const logout = () => {
     localStorage.removeItem("userInfo");
     setUser(null);
+    setIsAuthenticated(false);
   };
 
   const value: AuthContextType = {
