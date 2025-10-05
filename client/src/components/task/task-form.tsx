@@ -31,6 +31,7 @@ import { Task, TaskFormData } from "@/types";
 import { useTasks } from "@/hooks/use-tasks";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { z } from "zod";
 
 interface TaskFormProps {
   open: boolean;
@@ -38,6 +39,18 @@ interface TaskFormProps {
   task?: Task | null;
   onSubmit: (data: TaskFormData) => Promise<void>;
 }
+
+const TASK_STATUSES = ["Pending", "In Progress", "Completed"] as const;
+
+const taskFormSchema = z.object({
+  title: z.string().trim().min(1, "Title is required."),
+  description: z.string().trim().min(1, "Description is required."),
+  status: z.enum(TASK_STATUSES),
+  assignedUser: z.string().trim().min(1, "Assigned user is required."),
+  dueDate: z.string().trim().min(1, "Due date is required."),
+});
+
+type TaskFormErrors = Partial<Record<keyof TaskFormData, string>>;
 
 export function TaskForm({
   open,
@@ -52,15 +65,12 @@ export function TaskForm({
     assignedUser: "",
     dueDate: "",
   });
+  const [formErrors, setFormErrors] = useState<TaskFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [showDueDateError, setShowDueDateError] = useState(false);
-  // hooks
   const { users } = useTasks();
 
   useEffect(() => {
-    setShowDueDateError(false);
-
     if (task) {
       const existingDueDate = new Date(task.dueDate);
 
@@ -82,6 +92,8 @@ export function TaskForm({
         dueDate: "",
       });
     }
+
+    setFormErrors({});
   }, [task, open]);
 
   useEffect(() => {
@@ -93,26 +105,42 @@ export function TaskForm({
   useEffect(() => {
     if (!open) {
       setIsCalendarOpen(false);
-      setShowDueDateError(false);
+      setFormErrors({});
     }
   }, [open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.dueDate) {
-      setShowDueDateError(true);
-      setIsCalendarOpen(true);
+    const validationResult = taskFormSchema.safeParse(formData);
+
+    if (!validationResult.success) {
+      const fieldErrors = validationResult.error.flatten().fieldErrors;
+      const errors: TaskFormErrors = {};
+
+      Object.entries(fieldErrors).forEach(([field, messages]) => {
+        if (messages && messages.length > 0) {
+          errors[field as keyof TaskFormData] = messages[0];
+        }
+      });
+
+      setFormErrors(errors);
+
+      if (errors.dueDate) {
+        setIsCalendarOpen(true);
+      }
+
       return;
     }
 
-    setShowDueDateError(false);
+    const validData = validationResult.data;
+
+    setFormErrors({});
     setIsSubmitting(true);
 
-    console.log(formData.dueDate);
-
     try {
-      await onSubmit(formData);
+      await onSubmit(validData);
+      setFormData(validData);
       onOpenChange(false);
     } catch (error) {
       console.error(error);
@@ -123,6 +151,28 @@ export function TaskForm({
 
   const handleChange = (field: keyof TaskFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+
+    setFormErrors((prev) => {
+      if (!prev[field]) {
+        return prev;
+      }
+
+      const shouldClear =
+        field === "title" || field === "description"
+          ? value.trim().length > 0
+          : field === "assignedUser"
+          ? value.trim().length > 0
+          : field === "dueDate"
+          ? value !== ""
+          : true;
+
+      if (!shouldClear) {
+        return prev;
+      }
+
+      const { [field]: _removed, ...rest } = prev;
+      return rest;
+    });
   };
 
   const selectedDueDate = formData.dueDate
@@ -134,12 +184,21 @@ export function TaskForm({
       : undefined;
 
   const handleDueDateSelect = (date: Date | undefined) => {
-    handleChange("dueDate", date ? format(date, "yyyy-MM-dd") : "");
-    setShowDueDateError(!date);
-    if (date) {
-      setIsCalendarOpen(false);
+    if (!date) {
+      handleChange("dueDate", "");
+      setFormErrors((prev) => ({
+        ...prev,
+        dueDate: "Due date is required.",
+      }));
+      setIsCalendarOpen(true);
+      return;
     }
+
+    handleChange("dueDate", format(date, "yyyy-MM-dd"));
+    setIsCalendarOpen(false);
   };
+
+  const dueDateError = formErrors.dueDate;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -161,9 +220,13 @@ export function TaskForm({
               value={formData.title}
               onChange={(e) => handleChange("title", e.target.value)}
               placeholder="Enter task title"
-              required
               disabled={isSubmitting}
+              className={cn(formErrors.title && "border-destructive")}
+              aria-invalid={Boolean(formErrors.title)}
             />
+            {formErrors.title && (
+              <p className="text-sm text-destructive">{formErrors.title}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -174,9 +237,15 @@ export function TaskForm({
               onChange={(e) => handleChange("description", e.target.value)}
               placeholder="Enter task description"
               rows={3}
-              required
               disabled={isSubmitting}
+              className={cn(formErrors.description && "border-destructive")}
+              aria-invalid={Boolean(formErrors.description)}
             />
+            {formErrors.description && (
+              <p className="text-sm text-destructive">
+                {formErrors.description}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -187,24 +256,43 @@ export function TaskForm({
                 onValueChange={(value) => handleChange("status", value)}
                 disabled={isSubmitting}
               >
-                <SelectTrigger className="w-full cursor-pointer">
+                <SelectTrigger
+                  id="status"
+                  className={cn(
+                    "w-full cursor-pointer",
+                    formErrors.status && "border-destructive"
+                  )}
+                  aria-invalid={Boolean(formErrors.status)}
+                >
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="In Progress">In Progress</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
+                  {TASK_STATUSES.map((statusOption) => (
+                    <SelectItem value={statusOption} key={statusOption}>
+                      {statusOption}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              {formErrors.status && (
+                <p className="text-sm text-destructive">{formErrors.status}</p>
+              )}
             </div>
             <div className="space-y-2 w-full">
-              <Label htmlFor="status">Assigned User</Label>
+              <Label htmlFor="assignedUser">Assigned User</Label>
               <Select
                 value={formData.assignedUser}
                 onValueChange={(value) => handleChange("assignedUser", value)}
                 disabled={isSubmitting}
               >
-                <SelectTrigger className="w-full cursor-pointer">
+                <SelectTrigger
+                  id="assignedUser"
+                  className={cn(
+                    "w-full cursor-pointer",
+                    formErrors.assignedUser && "border-destructive"
+                  )}
+                  aria-invalid={Boolean(formErrors.assignedUser)}
+                >
                   <SelectValue placeholder="Select user" />
                 </SelectTrigger>
                 <SelectContent>
@@ -215,6 +303,11 @@ export function TaskForm({
                   ))}
                 </SelectContent>
               </Select>
+              {formErrors.assignedUser && (
+                <p className="text-sm text-destructive">
+                  {formErrors.assignedUser}
+                </p>
+              )}
             </div>
           </div>
 
@@ -236,11 +329,9 @@ export function TaskForm({
                   className={cn(
                     "w-full justify-start text-left font-normal",
                     !calendarSelectedDate && "text-muted-foreground",
-                    showDueDateError &&
-                      !formData.dueDate &&
-                      "border-destructive"
+                    dueDateError && "border-destructive"
                   )}
-                  aria-invalid={showDueDateError && !formData.dueDate}
+                  aria-invalid={Boolean(dueDateError)}
                   disabled={isSubmitting}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -261,8 +352,8 @@ export function TaskForm({
                 />
               </PopoverContent>
             </Popover>
-            {showDueDateError && !formData.dueDate && (
-              <p className="text-sm text-destructive">Select a due date.</p>
+            {dueDateError && (
+              <p className="text-sm text-destructive">{dueDateError}</p>
             )}
           </div>
 
