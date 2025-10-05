@@ -23,7 +23,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { Task, TaskFormData } from "@/types";
 import { useTasks } from "@/hooks/use-tasks";
-import { format, addDays, parseISO } from "date-fns";
+import { format } from "date-fns";
 
 interface TaskFormProps {
   open: boolean;

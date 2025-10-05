@@ -27,16 +27,8 @@ const DashboardPage = () => {
     sortOrder: "desc",
   });
 
-  const {
-    tasks,
-    loading: tasksLoading,
-    error,
-    loadTasks,
-    createTask,
-    updateTask,
-    deleteTask,
-    updateTaskStatus,
-  } = useTasks();
+  const { tasks, createTask, updateTask, deleteTask, updateTaskStatus, users } =
+    useTasks();
 
   const filteredTasks = useTaskFilters(
     tasks,
@@ -79,14 +71,24 @@ const DashboardPage = () => {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onToggleSidebar={() => setIsSidebarOpen(true)}
+        isSidebarOpen={isSidebarOpen}
       />
       <div className="max-w-7xl mx-auto px-4">
         <DashboardStats taskCounts={taskCounts} />
-        <TaskStatusFilter
-          activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
-          taskCounts={taskCounts}
-        />
+
+        <div className="flex justify-between">
+          <TaskStatusFilter
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+            taskCounts={taskCounts}
+          />
+
+          <AdvancedFilters
+            filters={advancedFilters}
+            onFiltersChange={setAdvancedFilters}
+            assignedUsers={users.map((user) => user.name)}
+          />
+        </div>
 
         <TaskList
           tasks={filteredTasks}

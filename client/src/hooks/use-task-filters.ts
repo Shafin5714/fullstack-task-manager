@@ -57,26 +57,31 @@ export function useTaskFilters(
       let bValue: any;
 
       switch (advancedFilters.sortBy) {
-        case "dueDate":
+        case "dueDate": {
           aValue = new Date(a.dueDate);
           bValue = new Date(b.dueDate);
           break;
-        case "createdAt":
+        }
+        case "createdAt": {
           aValue = new Date(a.createdAt);
           bValue = new Date(b.createdAt);
           break;
-        case "title":
+        }
+        case "title": {
           aValue = a.title.toLowerCase();
           bValue = b.title.toLowerCase();
           break;
-        case "status":
-          const statusOrder = { pending: 0, "In Progress": 1, completed: 2 };
+        }
+        case "status": {
+          const statusOrder = { Pending: 0, "In Progress": 1, Completed: 2 };
           aValue = statusOrder[a.status];
           bValue = statusOrder[b.status];
           break;
-        default:
+        }
+        default: {
           aValue = a.createdAt;
           bValue = b.createdAt;
+        }
       }
 
       if (aValue < bValue) return advancedFilters.sortOrder === "asc" ? -1 : 1;

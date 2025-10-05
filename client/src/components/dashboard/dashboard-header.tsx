@@ -17,6 +17,7 @@ interface DashboardHeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onToggleSidebar?: () => void;
+  isSidebarOpen: boolean;
 }
 
 export function DashboardHeader({
