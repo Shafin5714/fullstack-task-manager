@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "sonner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -23,6 +24,16 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const errorMessage = error.response.data.error.message
+      ? error.response.data.error.message
+      : error.response.data.error;
+
+    console.log(error.response.data.error);
+
+    if (errorMessage) {
+      toast.error(error.response.data.error);
+    }
+
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       window.location.href = "/login";
