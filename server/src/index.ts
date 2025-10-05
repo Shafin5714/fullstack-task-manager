@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./db/mongoose";
 dotenv.config();
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
 
 // connecting to Database
 connectDB();
