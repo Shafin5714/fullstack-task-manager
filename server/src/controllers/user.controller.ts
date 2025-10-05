@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import User from "../models/user.model";
-import generateToken from "../utils/generateToken";
+import { generateToken } from "../utils/generateToken";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -33,16 +33,16 @@ export const register = async (req: Request, res: Response) => {
 
     if (user) {
       // Generate token and set cookie
-      const token = generateToken(res, String(user._id));
+      const token = generateToken(String(user._id));
 
       res.status(201).json({
         success: true,
         message: "Registration successful.",
+        token,
         data: {
           id: user._id,
           name: user.name,
           email: user.email,
-          token,
         },
       });
     } else {
@@ -76,10 +76,11 @@ export const login = async (req: Request, res: Response) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (user && (await user.matchPassword(password))) {
-      generateToken(res, String(user._id));
+      const token = generateToken(String(user._id));
       res.json({
         success: true,
         message: "Login successful.",
+        token,
         data: {
           id: user._id,
           name: user.name,
@@ -101,9 +102,5 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = (req: Request, res: Response) => {
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };

@@ -56,6 +56,7 @@ type RegisterResponse = {
     name: string;
     email: string;
   };
+  token: string;
 };
 
 const RegisterPage = () => {
@@ -86,7 +87,7 @@ const RegisterPage = () => {
     });
 
     if (res.data.success) {
-      setAuthData(res.data.data);
+      setAuthData(res.data.data, res.data.token);
       toast.success(res.data.message);
       navigate("/");
     }

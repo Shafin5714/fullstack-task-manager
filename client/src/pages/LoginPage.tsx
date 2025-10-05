@@ -24,6 +24,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState } from "react";
+import axios from "@/lib/axios";
+import { useAuth } from "@/context/AuthContext";
 
 const formSchema = z.object({
   email: z.string().min(1, { message: "Email is required." }).email({
@@ -39,9 +41,21 @@ const formSchema = z.object({
     }),
 });
 
+type LoginResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  token: string;
+};
+
 const LoginPage = () => {
   // hooks
   const navigate = useNavigate();
+  const { setAuthData } = useAuth();
 
   // states
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -56,11 +70,18 @@ const LoginPage = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { email, password } = values;
+    setIsLoading(true);
+    const res = await axios.post<LoginResponse>("/user/login", {
+      email,
+      password,
+    });
 
-    // if (res.success) {
-    //   toast.success(res.message);
-    //   navigate("/");
-    // }
+    if (res.data.success) {
+      setAuthData(res.data.data, res.data.token);
+      toast.success(res.data.message);
+      navigate("/");
+    }
+    setIsLoading(false);
   };
 
   return (

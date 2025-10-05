@@ -15,7 +15,7 @@ type User = {
 
 type AuthContextType = {
   user: User | null;
-  setAuthData: (data: AuthData) => void;
+  setAuthData: (data: AuthData, token: string) => void;
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -41,8 +41,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initAuth = () => {
       const storedUser = localStorage.getItem("userInfo");
+      const token = localStorage.getItem("token");
 
-      if (storedUser) {
+      if (storedUser && token) {
         setUser(JSON.parse(storedUser));
         setIsAuthenticated(true);
       } else {
@@ -54,9 +55,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initAuth();
   }, []);
 
-  const setAuthData = (data: AuthData) => {
+  const setAuthData = (data: AuthData, token: string) => {
     if (data) {
       localStorage.setItem("userInfo", JSON.stringify(data));
+      localStorage.setItem("token", token);
       setUser(data);
       setIsAuthenticated(true);
     }
