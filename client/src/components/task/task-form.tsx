@@ -20,9 +20,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { Task, TaskFormData } from "@/types";
 import { useTasks } from "@/hooks/use-tasks";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
 interface TaskFormProps {
@@ -46,17 +53,25 @@ export function TaskForm({
     dueDate: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [showDueDateError, setShowDueDateError] = useState(false);
   // hooks
   const { users } = useTasks();
 
   useEffect(() => {
+    setShowDueDateError(false);
+
     if (task) {
+      const existingDueDate = new Date(task.dueDate);
+
       setFormData({
         title: task.title,
         description: task.description,
         status: task.status,
         assignedUser: task.assignedUser._id,
-        dueDate: format(task.dueDate, "yyyy-MM-dd"),
+        dueDate: Number.isNaN(existingDueDate.getTime())
+          ? ""
+          : format(existingDueDate, "yyyy-MM-dd"),
       });
     } else {
       setFormData({
@@ -69,8 +84,29 @@ export function TaskForm({
     }
   }, [task, open]);
 
+  useEffect(() => {
+    if (isSubmitting) {
+      setIsCalendarOpen(false);
+    }
+  }, [isSubmitting]);
+
+  useEffect(() => {
+    if (!open) {
+      setIsCalendarOpen(false);
+      setShowDueDateError(false);
+    }
+  }, [open]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.dueDate) {
+      setShowDueDateError(true);
+      setIsCalendarOpen(true);
+      return;
+    }
+
+    setShowDueDateError(false);
     setIsSubmitting(true);
 
     console.log(formData.dueDate);
@@ -87,6 +123,22 @@ export function TaskForm({
 
   const handleChange = (field: keyof TaskFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const selectedDueDate = formData.dueDate
+    ? new Date(formData.dueDate)
+    : undefined;
+  const calendarSelectedDate =
+    selectedDueDate && !Number.isNaN(selectedDueDate.getTime())
+      ? selectedDueDate
+      : undefined;
+
+  const handleDueDateSelect = (date: Date | undefined) => {
+    handleChange("dueDate", date ? format(date, "yyyy-MM-dd") : "");
+    setShowDueDateError(!date);
+    if (date) {
+      setIsCalendarOpen(false);
+    }
   };
 
   return (
@@ -167,15 +219,51 @@ export function TaskForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="dueDate">Due Date</Label>
-            <Input
-              id="dueDate"
-              type="date"
-              value={formData.dueDate}
-              onChange={(e) => handleChange("dueDate", e.target.value)}
-              required
-              disabled={isSubmitting}
-            />
+            <Label htmlFor="dueDate-trigger">Due Date</Label>
+            <Popover
+              open={isCalendarOpen}
+              onOpenChange={(openState) => {
+                if (!isSubmitting) {
+                  setIsCalendarOpen(openState);
+                }
+              }}
+            >
+              <PopoverTrigger asChild>
+                <Button
+                  id="dueDate-trigger"
+                  type="button"
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !calendarSelectedDate && "text-muted-foreground",
+                    showDueDateError &&
+                      !formData.dueDate &&
+                      "border-destructive"
+                  )}
+                  aria-invalid={showDueDateError && !formData.dueDate}
+                  disabled={isSubmitting}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {calendarSelectedDate
+                    ? format(calendarSelectedDate, "PPP")
+                    : "Select due date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={calendarSelectedDate}
+                  onSelect={handleDueDateSelect}
+                  disabled={(date) =>
+                    date < new Date(new Date().setHours(0, 0, 0, 0)) ||
+                    isSubmitting
+                  }
+                />
+              </PopoverContent>
+            </Popover>
+            {showDueDateError && !formData.dueDate && (
+              <p className="text-sm text-destructive">Select a due date.</p>
+            )}
           </div>
 
           <DialogFooter className="flex-col sm:flex-row gap-2 space-x-2 sm:gap-0">
