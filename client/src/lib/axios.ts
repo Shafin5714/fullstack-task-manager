@@ -24,19 +24,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const errorMessage = error.response.data.error.message
-      ? error.response.data.error.message
-      : error.response.data.error;
-
-    console.log(error.response.data.error);
-
-    if (errorMessage) {
-      toast.error(error.response.data.error);
+    if (error.response.data.message) {
+      toast.error(error.response.data.message);
     }
-
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
-      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
