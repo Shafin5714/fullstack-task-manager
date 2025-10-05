@@ -57,7 +57,18 @@ export function useTasks() {
   };
 
   const updateTask = async () => {};
-  const deleteTask = async () => {};
+
+  const deleteTask = async (id: string) => {
+    try {
+      await axios.delete(`/tasks/${id}`);
+      setTasks((prev) => prev.filter((task) => task._id !== id));
+      toast.success("Task deleted");
+    } catch (err) {
+      toast.error("Failed To delete task");
+      throw err;
+    }
+  };
+
   const updateTaskStatus = async () => {};
 
   return {

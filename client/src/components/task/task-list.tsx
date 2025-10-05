@@ -4,8 +4,8 @@ import { TaskCard } from "./task-card";
 interface TaskListProps {
   tasks: Task[];
   onEdit: (task: Task) => void;
-  onDelete: (taskId: string) => void;
-  onStatusChange: (taskId: string, status: Task["status"]) => void;
+  onDelete: (taskId: string) => Promise<void>;
+  onStatusChange: (taskId: string, status: Task["status"]) => Promise<void>;
 }
 
 export function TaskList({
