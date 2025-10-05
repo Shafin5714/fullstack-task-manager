@@ -28,6 +28,7 @@ import type { LucideIcon } from "lucide-react";
 import { DeleteTaskDialog } from "./delete-task-dialog";
 import { cn } from "@/lib/utils";
 import { Task } from "@/types";
+import { format } from "date-fns";
 
 interface TaskCardProps {
   task: Task;
@@ -225,7 +226,7 @@ export function TaskCard({
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3 shrink-0" />
                 <span className="whitespace-nowrap">
-                  {new Date(task.dueDate).toLocaleDateString()}
+                  {format(new Date(task.dueDate), "dd/MM/yyyy")}
                 </span>
               </div>
             </div>
