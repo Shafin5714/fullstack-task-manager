@@ -80,18 +80,22 @@ const RegisterPage = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { name, email, password } = values;
     setIsLoading(true);
-    const res = await axios.post<RegisterResponse>("/user/register", {
-      name,
-      email,
-      password,
-    });
+    try {
+      const res = await axios.post<RegisterResponse>("/user/register", {
+        name,
+        email,
+        password,
+      });
 
-    if (res.data.success) {
-      setAuthData(res.data.data, res.data.token);
-      toast.success(res.data.message);
-      navigate("/");
+      if (res.data.success) {
+        setAuthData(res.data.data, res.data.token);
+        toast.success(res.data.message);
+        navigate("/");
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
