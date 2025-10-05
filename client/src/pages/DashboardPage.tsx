@@ -5,6 +5,7 @@ import { TaskStatusFilter } from "@/components/task/task-status-filter";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { Task, TaskFormData } from "@/types";
 import { useMemo, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import {
   AdvancedFilters,
   type FilterOptions,
@@ -27,8 +28,15 @@ const DashboardPage = () => {
     sortOrder: "desc",
   });
 
-  const { tasks, createTask, updateTask, deleteTask, updateTaskStatus, users } =
-    useTasks();
+  const {
+    tasks,
+    createTask,
+    updateTask,
+    deleteTask,
+    updateTaskStatus,
+    users,
+    loading,
+  } = useTasks();
 
   const filteredTasks = useTaskFilters(
     tasks,
@@ -63,6 +71,14 @@ const DashboardPage = () => {
       completed: tasks.filter((t) => t.status === "Completed").length,
     };
   }, [tasks]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner className="size-10" />
+      </div>
+    );
+  }
 
   return (
     <div>
