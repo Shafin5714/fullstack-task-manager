@@ -23,6 +23,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { Task, TaskFormData } from "@/types";
 import { useTasks } from "@/hooks/use-tasks";
+import { format, addDays, parseISO } from "date-fns";
 
 interface TaskFormProps {
   open: boolean;
@@ -54,8 +55,8 @@ export function TaskForm({
         title: task.title,
         description: task.description,
         status: task.status,
-        assignedUser: task.assignedUser,
-        dueDate: task.dueDate,
+        assignedUser: task.assignedUser._id,
+        dueDate: format(task.dueDate, "yyyy-MM-dd"),
       });
     } else {
       setFormData({
@@ -71,6 +72,8 @@ export function TaskForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    console.log(formData.dueDate);
 
     try {
       await onSubmit(formData);

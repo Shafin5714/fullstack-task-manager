@@ -56,7 +56,19 @@ export function useTasks() {
     }
   };
 
-  const updateTask = async () => {};
+  const updateTask = async (id: string, data: TaskFormData) => {
+    try {
+      const updatedTask = await axios.put(`/tasks/${id}`, data);
+      setTasks((prev) =>
+        prev.map((task) => (task._id === id ? updatedTask.data.data : task))
+      );
+      toast.success("Task Updated");
+      return updatedTask;
+    } catch (err) {
+      toast.error("Failed to update task. Please try again.");
+      throw err;
+    }
+  };
 
   const deleteTask = async (id: string) => {
     try {

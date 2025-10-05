@@ -4,7 +4,7 @@ import { TaskList } from "@/components/task/task-list";
 import { TaskStatusFilter } from "@/components/task/task-status-filter";
 import { useTaskFilters } from "@/hooks/use-task-filters";
 import { Task, TaskFormData } from "@/types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   AdvancedFilters,
   type FilterOptions,
@@ -63,6 +63,15 @@ const DashboardPage = () => {
     }
   };
 
+  const taskCounts = useMemo(() => {
+    return {
+      all: tasks.length,
+      pending: tasks.filter((t) => t.status === "Pending").length,
+      inProgress: tasks.filter((t) => t.status === "In Progress").length,
+      completed: tasks.filter((t) => t.status === "Completed").length,
+    };
+  }, [tasks]);
+
   return (
     <div>
       <DashboardHeader
@@ -72,23 +81,11 @@ const DashboardPage = () => {
         onToggleSidebar={() => setIsSidebarOpen(true)}
       />
       <div className="max-w-7xl mx-auto px-4">
-        <DashboardStats
-          taskCounts={{
-            all: 10,
-            pending: 10,
-            inProgress: 10,
-            completed: 10,
-          }}
-        />
+        <DashboardStats taskCounts={taskCounts} />
         <TaskStatusFilter
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
-          taskCounts={{
-            all: 10,
-            pending: 10,
-            inProgress: 10,
-            completed: 10,
-          }}
+          taskCounts={taskCounts}
         />
 
         <TaskList
