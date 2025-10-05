@@ -56,7 +56,7 @@ export function DashboardHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-10 space-x-3 sm:gap-4">
           <Button
             onClick={onCreateTask}
             className="gap-2 cursor-pointer"
@@ -66,38 +66,46 @@ export function DashboardHeader({
             <span className="hidden sm:inline">New Task</span>
           </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full cursor-pointer"
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder.svg" alt={user?.name} />
-                  <AvatarFallback>
-                    {user?.name?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {user?.name}
-                  </p>
-                  <p className="text-xs leading-none text-muted-foreground">
-                    {user?.email}
-                  </p>
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
+          <div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full cursor-pointer"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="/placeholder.svg" alt={user?.name} />
+                    <AvatarFallback>
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-lg font-medium leading-none">
+                      {user?.name}
+                    </p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user?.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
 
-              <DropdownMenuItem onClick={logout}>
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem onClick={logout}>
+                  <Button
+                    className="w-full cursor-pointer"
+                    variant="destructive"
+                    size="sm"
+                  >
+                    Log out
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 

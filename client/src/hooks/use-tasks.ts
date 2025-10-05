@@ -81,7 +81,22 @@ export function useTasks() {
     }
   };
 
-  const updateTaskStatus = async () => {};
+  const updateTaskStatus = async (id: string, status: Task["status"]) => {
+    try {
+      const updatedTask = await axios.put(`/tasks/${id}`, { status });
+      setTasks((prev) =>
+        prev.map((task) => (task._id === id ? updatedTask.data.data : task))
+      );
+      toast.success(
+        status === "Completed"
+          ? "Task marked as completed"
+          : `Status updated to ${status}`
+      );
+    } catch (err) {
+      toast.error("Failed to update status. Please try again.");
+      throw err;
+    }
+  };
 
   return {
     tasks,

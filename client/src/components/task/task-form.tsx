@@ -128,14 +128,14 @@ export function TaskForm({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value) => handleChange("status", value)}
                 disabled={isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -145,15 +145,14 @@ export function TaskForm({
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label htmlFor="status">Assigned User</Label>
               <Select
                 value={formData.assignedUser}
                 onValueChange={(value) => handleChange("assignedUser", value)}
                 disabled={isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue placeholder="Select user" />
                 </SelectTrigger>
                 <SelectContent>
@@ -179,20 +178,20 @@ export function TaskForm({
             />
           </div>
 
-          <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+          <DialogFooter className="flex-col sm:flex-row gap-2 space-x-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto cursor-pointer"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto cursor-pointer"
             >
               {isSubmitting && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

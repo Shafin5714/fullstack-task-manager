@@ -63,7 +63,10 @@ export function AdvancedFilters({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="gap-2 bg-transparent shrink-0">
+        <Button
+          variant="outline"
+          className="gap-2 bg-transparent shrink-0 cursor-pointer"
+        >
           <Filter className="h-4 w-4" />
           <span className="hidden sm:inline">Filters</span>
           {activeFiltersCount > 0 && (
@@ -99,7 +102,7 @@ export function AdvancedFilters({
                   handleFilterChange("assignedUser", value)
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full cursor-pointer">
                   <SelectValue placeholder="All users" />
                 </SelectTrigger>
                 <SelectContent>
@@ -121,7 +124,7 @@ export function AdvancedFilters({
                     <Button
                       variant="outline"
                       className={cn(
-                        "justify-start text-left font-normal w-full",
+                        "justify-start text-left font-normal w-full cursor-pointer",
                         !filters.dueDateFrom && "text-muted-foreground"
                       )}
                     >
@@ -148,7 +151,7 @@ export function AdvancedFilters({
                     <Button
                       variant="outline"
                       className={cn(
-                        "justify-start text-left font-normal w-full",
+                        "justify-start text-left font-normal w-full cursor-pointer",
                         !filters.dueDateTo && "text-muted-foreground"
                       )}
                     >
@@ -177,7 +180,7 @@ export function AdvancedFilters({
                   value={filters.sortBy}
                   onValueChange={(value) => handleFilterChange("sortBy", value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full cursor-pointer">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -194,7 +197,7 @@ export function AdvancedFilters({
                     handleFilterChange("sortOrder", value)
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full cursor-pointer">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

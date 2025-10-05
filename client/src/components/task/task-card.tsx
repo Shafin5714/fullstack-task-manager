@@ -7,16 +7,24 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Calendar,
-  Clock,
+  Check,
+  CheckCircle2,
+  Circle,
+  Loader2,
   MoreHorizontal,
   Edit,
   Trash2,
   User,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { DeleteTaskDialog } from "./delete-task-dialog";
 import { cn } from "@/lib/utils";
 import { Task } from "@/types";
@@ -28,6 +36,13 @@ interface TaskCardProps {
   onStatusChange: (taskId: string, status: Task["status"]) => Promise<void>;
 }
 
+interface StatusOption {
+  value: Task["status"];
+  label: string;
+  description: string;
+  icon: LucideIcon;
+}
+
 export function TaskCard({
   task,
   onEdit,
@@ -36,6 +51,27 @@ export function TaskCard({
 }: TaskCardProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const statusOptions: StatusOption[] = [
+    {
+      value: "Pending",
+      label: "Mark as Pending",
+      description: "Move task back to the backlog",
+      icon: Circle,
+    },
+    {
+      value: "In Progress",
+      label: "Mark In Progress",
+      description: "Highlight that work is underway",
+      icon: Loader2,
+    },
+    {
+      value: "Completed",
+      label: "Mark Complete",
+      description: "Celebrate a finished task",
+      icon: CheckCircle2,
+    },
+  ];
 
   const getStatusColor = (status: Task["status"]) => {
     switch (status) {
@@ -64,6 +100,10 @@ export function TaskCard({
   };
 
   const handleStatusChange = async (newStatus: Task["status"]) => {
+    if (newStatus === task.status) {
+      return;
+    }
+
     setIsUpdating(true);
     try {
       await onStatusChange(task._id, newStatus);
@@ -108,32 +148,60 @@ export function TaskCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0"
+                  className="h-8 w-8 p-0 opacity-100 sm:group-hover:opacity-100 transition-opacity shrink-0 cursor-pointer"
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onEdit(task)}>
+                <DropdownMenuItem
+                  onClick={() => onEdit(task)}
+                  className="cursor-pointer"
+                >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() =>
-                    handleStatusChange(
-                      task.status === "Completed" ? "Pending" : "Completed"
-                    )
-                  }
-                  disabled={isUpdating}
-                >
-                  <Clock className="mr-2 h-4 w-4" />
-                  {task.status === "Completed"
-                    ? "Mark Pending"
-                    : "Mark Complete"}
-                </DropdownMenuItem>
+
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger className="flex items-center cursor-pointer">
+                    <Loader2 className="mr-2 h-4 w-4" />
+                    Update status
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent className="min-w-[220px]">
+                    {statusOptions.map((option) => {
+                      const Icon = option.icon;
+                      const isActive = task.status === option.value;
+
+                      return (
+                        <DropdownMenuItem
+                          key={option.value}
+                          onClick={() => handleStatusChange(option.value)}
+                          disabled={isUpdating || isActive}
+                          className="flex items-start gap-3 cursor-pointer"
+                        >
+                          <Icon className="mt-0.5 h-4 w-4" />
+                          <div className="flex flex-col gap-0.5 text-left">
+                            <span className="text-sm font-medium">
+                              {option.label}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {option.description}
+                            </span>
+                          </div>
+                          {isActive && (
+                            <Check className="ml-auto h-4 w-4 text-primary" />
+                          )}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+
+                <DropdownMenuSeparator />
+
                 <DropdownMenuItem
                   onClick={() => setShowDeleteDialog(true)}
-                  className="text-destructive"
+                  className="text-destructive cursor-pointer"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete
