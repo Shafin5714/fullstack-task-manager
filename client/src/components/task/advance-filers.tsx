@@ -97,9 +97,9 @@ export function AdvancedFilters({
             <div className="space-y-2">
               <Label>Assigned User</Label>
               <Select
-                value={filters.assignedUser}
+                value={filters.assignedUser || "all"}
                 onValueChange={(value) =>
-                  handleFilterChange("assignedUser", value)
+                  handleFilterChange("assignedUser", value === "all" ? "" : value)
                 }
               >
                 <SelectTrigger className="w-full cursor-pointer">
