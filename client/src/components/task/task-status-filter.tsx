@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -30,21 +28,21 @@ export function TaskStatusFilter({
       count: taskCounts.all,
     },
     {
-      id: "pending",
+      id: "Pending",
       label: "Pending",
       shortLabel: "Pending",
       icon: Clock,
       count: taskCounts.pending,
     },
     {
-      id: "in-progress",
+      id: "In Progress",
       label: "In Progress",
       shortLabel: "Progress",
       icon: AlertCircle,
       count: taskCounts.inProgress,
     },
     {
-      id: "completed",
+      id: "Completed",
       label: "Completed",
       shortLabel: "Done",
       icon: CheckCircle,

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,11 +39,11 @@ export function TaskCard({
 
   const getStatusColor = (status: Task["status"]) => {
     switch (status) {
-      case "pending":
+      case "Pending":
         return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
-      case "in-progress":
+      case "In Progress":
         return "bg-blue-500/10 text-blue-500 border-blue-500/20";
-      case "completed":
+      case "Completed":
         return "bg-green-500/10 text-green-500 border-green-500/20";
       default:
         return "bg-gray-500/10 text-gray-500 border-gray-500/20";
@@ -54,11 +52,11 @@ export function TaskCard({
 
   const getStatusLabel = (status: Task["status"]) => {
     switch (status) {
-      case "pending":
+      case "Pending":
         return "Pending";
-      case "in-progress":
+      case "In Progress":
         return "In Progress";
-      case "completed":
+      case "Completed":
         return "Completed";
       default:
         return status;
@@ -68,23 +66,23 @@ export function TaskCard({
   const handleStatusChange = async (newStatus: Task["status"]) => {
     setIsUpdating(true);
     try {
-      await onStatusChange(task.id, newStatus);
+      await onStatusChange(task._id, newStatus);
     } finally {
       setIsUpdating(false);
     }
   };
 
   const handleDelete = async () => {
-    await onDelete(task.id);
+    await onDelete(task._id);
     setShowDeleteDialog(false);
   };
 
   const isOverdue =
-    new Date(task.dueDate) < new Date() && task.status !== "completed";
+    new Date(task.dueDate) < new Date() && task.status !== "Completed";
 
   return (
     <>
-      <Card className="group hover:shadow-md transition-shadow">
+      <Card className="group hover:shadow-md transition-shadow my-5">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-2">
             <div className="space-y-2 flex-1 min-w-0">
@@ -123,13 +121,13 @@ export function TaskCard({
                 <DropdownMenuItem
                   onClick={() =>
                     handleStatusChange(
-                      task.status === "completed" ? "pending" : "completed"
+                      task.status === "Completed" ? "Pending" : "Completed"
                     )
                   }
                   disabled={isUpdating}
                 >
                   <Clock className="mr-2 h-4 w-4" />
-                  {task.status === "completed"
+                  {task.status === "Completed"
                     ? "Mark Pending"
                     : "Mark Complete"}
                 </DropdownMenuItem>
@@ -154,7 +152,7 @@ export function TaskCard({
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 min-w-0">
               <div className="flex items-center gap-1">
                 <User className="h-3 w-3 shrink-0" />
-                <span className="truncate">{task.assignedUser}</span>
+                <span className="truncate">{task.assignedUser.name}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3 shrink-0" />
@@ -166,7 +164,7 @@ export function TaskCard({
 
             <Avatar className="h-6 w-6 shrink-0">
               <AvatarFallback className="text-xs">
-                {task.assignedUser.charAt(0).toUpperCase()}
+                {task.assignedUser.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>

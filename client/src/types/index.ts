@@ -1,9 +1,13 @@
 export interface Task {
-  id: string;
+  _id: string;
   title: string;
   description: string;
-  status: "pending" | "in-progress" | "completed";
-  assignedUser: string;
+  status: "Pending" | "In Progress" | "Completed";
+  assignedUser: {
+    _id: string;
+    name: string;
+    email: string;
+  };
   dueDate: string;
   createdAt: string;
 }
@@ -11,7 +15,13 @@ export interface Task {
 export interface TaskFormData {
   title: string;
   description: string;
-  status: "pending" | "in-progress" | "completed";
+  status: "Pending" | "In Progress" | "Completed";
   assignedUser: string;
   dueDate: string;
+}
+
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
 }

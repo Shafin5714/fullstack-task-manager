@@ -1,4 +1,3 @@
-"use client";
 import { Task } from "@/types";
 import { TaskCard } from "./task-card";
 
@@ -48,7 +47,7 @@ export function TaskList({
     <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {tasks.map((task) => (
         <TaskCard
-          key={task.id}
+          key={task._id}
           task={task}
           onEdit={onEdit}
           onDelete={onDelete}

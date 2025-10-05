@@ -39,6 +39,7 @@ export const createTask = async (req: Request, res: Response) => {
     const userId = (req as any).user._id;
 
     const task = await Task.create({
+      id: userId,
       title,
       description,
       status: status || "Pending",

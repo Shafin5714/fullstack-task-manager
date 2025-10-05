@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
 import { Task, TaskFormData } from "@/types";
+import { useTasks } from "@/hooks/use-tasks";
 
 interface TaskFormProps {
   open: boolean;
@@ -39,11 +40,13 @@ export function TaskForm({
   const [formData, setFormData] = useState<TaskFormData>({
     title: "",
     description: "",
-    status: "pending",
+    status: "Pending",
     assignedUser: "",
     dueDate: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // hooks
+  const { users } = useTasks();
 
   useEffect(() => {
     if (task) {
@@ -58,7 +61,7 @@ export function TaskForm({
       setFormData({
         title: "",
         description: "",
-        status: "pending",
+        status: "Pending",
         assignedUser: "",
         dueDate: "",
       });
@@ -133,23 +136,31 @@ export function TaskForm({
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="In Progress">In Progress</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="assignedUser">Assigned User</Label>
-              <Input
-                id="assignedUser"
+              <Label htmlFor="status">Assigned User</Label>
+              <Select
                 value={formData.assignedUser}
-                onChange={(e) => handleChange("assignedUser", e.target.value)}
-                placeholder="Enter user name"
-                required
+                onValueChange={(value) => handleChange("assignedUser", value)}
                 disabled={isSubmitting}
-              />
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select user" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem value={user._id} key={user._id}>
+                      {user.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

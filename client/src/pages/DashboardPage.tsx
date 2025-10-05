@@ -57,7 +57,7 @@ const DashboardPage = () => {
 
   const handleTaskSubmit = async (formData: TaskFormData) => {
     if (editingTask) {
-      await updateTask(editingTask.id, formData);
+      await updateTask(editingTask._id, formData);
     } else {
       await createTask(formData);
     }

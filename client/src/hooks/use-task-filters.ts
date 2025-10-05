@@ -18,15 +18,15 @@ export function useTaskFilters(
         (task) =>
           task.title.toLowerCase().includes(query) ||
           task.description.toLowerCase().includes(query) ||
-          task.assignedUser.toLowerCase().includes(query)
+          task.assignedUser.name.toLowerCase().includes(query)
       );
     }
 
     // Apply status filter
     if (statusFilter !== "all") {
       filtered = filtered.filter((task) => {
-        if (statusFilter === "in-progress")
-          return task.status === "in-progress";
+        if (statusFilter === "In Progress")
+          return task.status === "In Progress";
         return task.status === statusFilter;
       });
     }
@@ -34,7 +34,7 @@ export function useTaskFilters(
     // Apply assigned user filter
     if (advancedFilters.assignedUser) {
       filtered = filtered.filter(
-        (task) => task.assignedUser === advancedFilters.assignedUser
+        (task) => task.assignedUser.name === advancedFilters.assignedUser
       );
     }
 
@@ -70,8 +70,7 @@ export function useTaskFilters(
           bValue = b.title.toLowerCase();
           break;
         case "status":
-          // Custom status order: pending, in-progress, completed
-          const statusOrder = { pending: 0, "in-progress": 1, completed: 2 };
+          const statusOrder = { pending: 0, "In Progress": 1, completed: 2 };
           aValue = statusOrder[a.status];
           bValue = statusOrder[b.status];
           break;
