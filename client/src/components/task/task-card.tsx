@@ -123,7 +123,7 @@ export function TaskCard({
 
   return (
     <>
-      <Card className="group hover:shadow-md transition-shadow my-5">
+      <Card className="group hover:shadow-md transition-shadow mt-3">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-2">
             <div className="space-y-2 flex-1 min-w-0">
